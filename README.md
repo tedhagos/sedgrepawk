@@ -145,51 +145,79 @@ Examples;
 
 `declare -f | grep '^[a-z_]'` - shows all the functions that start with any lowercase character or underscore
 
+`grep 'rotate [46]$' /etc/logrotate.d/*` - will show all the files in /etc/logrotate.d/ that has 4 or 6 in its ending
+
+`grep 'rotate [^4]$' /etc/logrotate.d/*` - will match every file that has 'rotate' in its ending but we don't want the 4 (everything else but the 4)
+
+`grep '[Ss]erver' /etc/hosts.allow` - What do you think this does?
+
+## boundaries
+
+`\s` represents whitespace (line return, tab or just plain whitespace)
+
+`\b` a word boundary, might be a space but could also be hypen.
+
+`\S` - Not a white space (revers of \s)
+
+`\B` not a word boundary (reverse \b)
+
+`\ssystem` will match "file system"
+
+`\bsystem` will match "file system" and "file-system"
+
+Examples;
+
+`grep server  /etc/ntp.conf.bak` will match lines that has "server" and "servers". If you want to exclude the lines with "servers" (plural), put a word boundary on the regular expression, like this.
+
+`grep 'server\b' /etc/ntp.conf.bak`  - this will exclude the lines that has the plural "servers"
+
+`grep 'server\S' /etc/ntp.conf.bak` - this command on the other hand, will only the show the lines that the "servers" (plural)
+
 ## quantifiers
 
+`a*` matches zero or more _a_ 
 
+`a?` matches zero _a_ or once only
 
+`a+` matches one or more occurences
 
+`a{2}` matches exactly 3 _a_ characters
 
+Now, some examples;
 
+`grep '^\s#' /vagrant/Vagrantfile` - will show all the commented lines (the ones with a pound sign)
 
+`grep -v '^\s#' /vagrant/Vagrantfile` - will show only the lines that are not commented
 
+# sed
 
-*example 1. contents of sample1.txt*
+*sed* is a non-interactive stream batch editor. It works with streams e.g. STDIN or when a file is read into memory, it's treated as a stream. You can do text transformations with _sed_.
+
+`sed -n 'p' sample2` - prints out each line in our sample2 file (-n means suppress the output, only show the pattern. We don't have a pattern, so it shows everything)
+
+`sed -n '1,5 p' sample2` - prints lines 1-5 of sample2
+
+`sed -n '5,$ p' sample2` - prints from line 5 up until the end of the doc
+
+`sed -n '/^a/ p' sample2` - prints all the lines that starts with letter _a_
+
+`sed -n '/^a[0-9]/ p' sample2` prints all the lines that start with _a_ followed by digits
+
+### substitute command
+
+When you want to replace a specific string occurence with something. The command is as follows
 
 ```bash
-the quick brown fox jumped over the head of lazy dog.
-THE QUICK BROWN FOX JUMPED OVER THE HEAD OF THE LAZY DOG.
-The Quick Brown Fox Jumped over The Head Of The Lazy Dog.
+sed '[range] s/<string>/<replacement>/' file
 ```
 
-`grep the sample1.txt` will give the following results
+The command `sed s/start/bleh/ sample2` will replace all the occurences of the word "start" with "bleh" in the sample2 file. But this will only print in STDOUT, it won't actually change the file sample2.
 
-```
-the quick brown fox jumped over the head of lazy dog.
-```
 
-`grep THE sample1.txt` will output
 
-```
-THE QUICK BROWN FOX JUMPED OVER THE HEAD OF THE LAZY DOG.
-```
 
-`grep The sample1.txt` will output
 
-```
-The Quick Brown Fox Jumped over The Head Of The Lazy Dog.
-```
-
-Why.
-
-What's grep, why is it useful
-
-What's sed. 
-
-What's awk
-
-## grep
+# awk
 
 
 
@@ -197,7 +225,6 @@ What's awk
 
 
 
-## sed
 
 
 
@@ -205,7 +232,14 @@ What's awk
 
 
 
-## awk
+
+
+
+
+
+
+
+## 
 
 
 
