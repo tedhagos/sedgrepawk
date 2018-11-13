@@ -213,13 +213,146 @@ sed '[range] s/<string>/<replacement>/' file
 
 The command `sed s/start/bleh/ sample2` will replace all the occurences of the word "start" with "bleh" in the sample2 file. But this will only print in STDOUT, it won't actually change the file sample2.
 
+For example, let's consider the _pythonsample.py_ file (shown below)
 
+```python
+count = 0
+while True:
+print(count)
+count += 1
+if count >= 5:
+break
+```
 
+It's a botched program, because it doesn't have any indentations (Python is a stickler for indents).  Just looking at the program, the codes after _while_ should be indented; also the codes after _if_ should be indented.  Let's print this out in the terminal and show their line numbers. You can do that with this command `nl pythonsample.py`, which shows the following output.
 
+```python
+     1	count = 0
+     2	while True:
+     3	print(count)
+     4	count += 1
+     5	if count >= 5:
+     6	break
+```
+
+We should indent lines 3-5 by 4 spaces, and then line 6 by 8 spaces.  
+
+```bash
+sed '3,5 s/^/    /g' pythonsample.py
+```
+
+This results in the following file
+
+```python
+count = 0
+while True:
+    print(count)
+    count += 1
+    if count >= 5:
+break
+
+```
+
+Of course, these changes aren't written permanently to the pythonsample file. To make the changes permanent, we can redirect the output of the _sed_ command to the python file, like this
+
+```bash
+sed '3,5 s/^/    /g' pythonsample.py > pythonsample.py
+```
+
+Or we can use the `-i` directive, like this
+
+```bash
+sed -i.bak '3,5 s/^/    /g' pythonsample.py
+```
+
+We still have to fix line number 6, it needs to be indented 8 spaces; I'll leave this to you for a small exercise.
+
+## Appending
+
+You can also use sed to append entries to files. Let's see the following example. 
+
+```bash
+ sed -n '/^server  3/ p' ntp.conf
+```
+
+It should give us the following output
+
+```bash
+server  3.us.pool.ntp.org               iburst
+```
+
+If we wanted to append a line after "server  3", we can manage it with this command
+
+```bash
+sed '/^server  3/ a server  ntp.example.com' ntp.conf | more
+```
+
+The `| more` command is there just so we can see the results before it scrolls out of the screen. Again, this isn't permanent and won't be written back to the file; so, let's make it permanent.
+
+```bash
+sed -i.bak '/^server  3/ a server  ntp.example.com' ntp.conf
+```
+
+If we use the _i_ command instead of _a_,  instead of "ntp.example.com" being written after "server. 3", it will be written before it. Try it out.
+
+```bash
+sed '/^server  3/ i server  ntp.example.com' ntp.conf | more
+```
+
+If we wanted to delete some entries from the file ntp.conf, say, we wanted to delete servers 0-3, we can do it like this
+
+```bash
+sed '/^server\s [0-9]\./ d' ntp.conf | more
+```
+
+## Multiple sed commands
+
+You can combine sed commands (interactively) using curly braces, like this
+
+```sed
+sed '{
+   3,5  s/^/    g 
+   6    s/^/    g 
+}' pythonsample.py
+```
+
+Or we can put these commands in control file (a program).  Let's say we have a file called "pythonsample.sed"; it doesn't matter what the name of the file is, we don't even have to put the "sed" extension, the name serves a practical purpose (for us to remember it easily), there is no technical reason for the file to be named like that. We can put the following commands in it.
+
+```sed
+3,5  s/^/    g
+6    s/^/    g 
+```
+
+To execute this, we can use the command
+
+```bash
+sed -f pythonsample.sed pythonsample.py
+```
+
+This results into
+
+```python
+count = 0
+while True:
+    print(count)
+    count += 1
+    if count >= 5:
+        break
+```
+
+Now, all you have to do is to make the change permanent in the file. Use the `-i` or `--in-place` option in the `sed` command to write the changes to the file.
 
 # awk
 
 
+
+
+
+
+
+
+
+https://likegeeks.com/awk-command/
 
 
 

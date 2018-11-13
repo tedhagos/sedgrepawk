@@ -1,0 +1,236 @@
+<!doctype html>
+<html>
+<head>
+<meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'>
+<title>README</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body><h1>Introduction to grep, sed and awk</h1>
+<p>You already know how to use this. At least instinctively. </p>
+<p><code>grep user /etc/passwd</code> - will scan the entire file of <em>/etc/passwd</em> and find any line that matches <code>user</code>, which in this case is a regular expression. </p>
+<p><strong>NOTE</strong>:  it might be better if you use <code>grep --color=auto</code> rather than just regular <code>grep</code>, so you can see the matching expression easily. You can alias this in your bashrc file</p>
+<p>Now, try <code>grep User /etc/passwd</code>. What results did you get</p>
+<p>Next, try <code>grep &#39;[Uu]ser&#39; /etc/passwd</code>. What results did you get? What if we used <code>grep &#39;[a-zA-Z]ser&#39; /etc/passwd</code></p>
+<p>Another example;</p>
+<p>Let&#39;s use the <code>declare</code> utilty, if you run this command, you&#39;ll see all the functions that are defined in the system (including functions you created on your own and are part of the login script). You&#39;ll see the name of the function and the definition. If we use <code>declare -F</code>, we&#39;ll get only the names of the function, like this</p>
+<pre><code>declare -f rvm
+declare -f rvm_debug
+declare -f rvm_debug_stream
+declare -f rvm_error
+declare -f rvm_error_help
+declare -f rvm_fail
+declare -f rvm_help
+declare -f rvm_install_gpg_setup
+declare -f rvm_is_a_shell_function
+declare -f rvm_log
+declare -f rvm_notify
+</code></pre>
+<p>But, annoyingly, the <code>declare -f</code> is still included in. To get rid of that, you can try the command <code>declare -f | grep &#39;[a-z_]&#39;</code>.  Now, we get this</p>
+<pre><code>rvm () 
+rvm_debug () 
+rvm_debug_stream () 
+rvm_error () 
+rvm_error_help () 
+rvm_fail () 
+rvm_help () 
+rvm_install_gpg_setup () 
+rvm_is_a_shell_function () 
+rvm_log () 
+rvm_notify () 
+</code></pre>
+<p><strong>Some examples of sed</strong></p>
+<p><code>sed &#39;p&#39; /etc/man.conf</code> ,  it should just print the entire contentst of &quot;man .conf&quot;, but you&#39;ll see every line  of it printed twice. It prints the pattern, then it prints the output of the pattern. So, to suppress the output, we can use the command <code>sed -n &#39;p&#39; /etc/man.conf</code>.  So, in this  command, <code>&#39;p&#39;</code> is a command, it means &quot;print&quot;.  </p>
+<p>If we use the command <code>sed -n &#39;/^#/  p&#39; /etc/man.conf</code>. What does this mean? We know <code>p</code> means print, but we&#39;ve got some new things int the expression; <code>/^#/</code> is a pattern, everything in between the slashes is a pattern. What we&#39;re looking for is are all lines that begin with the pound sign; and we want to print it.  </p>
+<p><code>sed &#39;/^#/  d&#39; /etc/man.conf</code> - this will delete all the lines that starts with a pound sign</p>
+<p><code>sed -n &#39;/^#/  ;/^$/&#39; /etc/man.conf</code> - this will delete all the blank lines. The caret symbol, as you will remember, means &quot;starts with&quot; and the dollar symbol means &quot;ends with&quot;. Since there are no characters between the &quot;starts with &quot; and &quot;ends witht&quot; pattern, we&#39;re looking for for a blank line. The semi-colon is used to join the two regular expressions. It&#39;s how you make a compound expression.</p>
+<p><strong>Some examples of awk</strong></p>
+<p>Awk is the third tool we&#39;ll look at, it&#39;s also the most powerful among the three. You can use awk like this</p>
+<p><code>awk { print } /etc/man.conf</code>. It will simply print all contents of &quot;man.conf&quot; line per line.  Awk command can be this short, it can also be this long</p>
+<pre><code class='language-shell' lang='shell'>awk &#39;BEGIN {print &quot;Hello&quot;} {print} END {print NR}&#39; /etc/man.conf
+</code></pre>
+<p>We can also pipe it.</p>
+<p><code>ifconfig eth0 | awk -F&quot;:&quot; &#39;/HWaddr/{print $3 $4 $5}&#39;</code>. This print out the mac or hardware address of eth0. If you&#39;re on a mac, you should use this</p>
+<pre><code class='language-shell' lang='shell'>ifconfig en1 | awk -F&quot;:&quot; &#39;/ether/{print $3 $4 $5}
+</code></pre>
+<p>To try out another example, we can type the command</p>
+<p><code>ls -l | awk &#39;/[a-zA-Z]/ {print $9 }&#39;</code> which will print only filenames column of the <code>ls -l</code> command</p>
+<h1>grep</h1>
+<p>It means <strong>G</strong>lobal <strong>R</strong>egular <strong>E</strong>xpression <strong>P</strong>rint. It&#39;s a text search utility used from the command line to globally search a file or STDIN for an given regular expression. It will print matching lines to STDOUT.</p>
+<p><code>grep &#39;regular expression&#39; &lt;which files to search&gt;</code></p>
+<p>We can also use it like this</p>
+<p><code>&lt;command&gt; | grep &#39;regular expression&#39;</code></p>
+<p>Some examples</p>
+<ul>
+<li><code>grep &#39;user&#39; /var/log/system.log</code> - searches for the the line which matches the pattern <code>user</code> in a specific file</li>
+<li><code>grep -i &#39;user&#39; /var/log/system.log</code> - same as above, but the <em>-i</em> makes the expression case-insensitive</li>
+<li><code>grep</code>user<code>/var/log/*</code> - same as above, but it searches for the pattern in all the files under /var/log </li>
+<li><code>ifconfig eth0 | grep &#39;active&#39;</code> - tries to see the active status of eth0</li>
+
+</ul>
+<p><strong>NOTE</strong>:  This tutorial has a Github repo. The sample files uses in this tutorial are in the repo. You should download all of it if you want to follow the examples. There are 3 sample files in the repo, <em>autofs.conf, man.conf</em> and <em>sample1.txt</em>.</p>
+<h1>regular expressions</h1>
+<p><em>What is it</em>? It&#39;s a sequence of symbols and characters expressing a string or pattern to be matched within a longer string. For example;</p>
+<pre><code class='language-shell' lang='shell'>\b[Cc]olou?r\b
+</code></pre>
+<p>This regular expression is designed to match the word(s) Color, Colour, color or colour, where;</p>
+<ul>
+<li><code>\b</code> means a word boundary</li>
+<li><code>[Cc]</code> is the range specifier. We don&#39;t mind if the word begins in lowercase or uppercase</li>
+<li><code>u?</code> means the <em>u</em> character is optional. We don&#39;t care if it&#39;s the American or English spelling</li>
+
+</ul>
+<h2>anchors</h2>
+<p><code>^The</code> - matches any string that starts with &quot;The&quot;</p>
+<p><code>bank$</code> - matches any string that ends with &quot;bank&quot;</p>
+<p><code>^The bank$</code> - matches any string that begins with &quot;The&quot; and ends with &quot;bank&quot;</p>
+<p><code>quick</code> - matches any srting that has the word &quot;quick&quot; in it</p>
+<p>For example, the command <code>grep &#39;^$&#39; autofs.conf&#39;</code> will display all the blank lines. But if I want to see all non-blank lines, we can instead say</p>
+<pre><code class='language-shell' lang='shell'>grep -v &#39;^$&#39; autofs.conf
+</code></pre>
+<p>The <em>-v</em> means, we want the reverse (think of it like the logical unary  <em>not</em> operator)</p>
+<h2>ranges</h2>
+<p><code>[a-z]</code> - We&#39;re looking for any combination of lowercase letters</p>
+<p><code>[A-Z]</code> - We&#39;re looking for any combination of uppercase letters</p>
+<p><code>[a-zA-Z]</code> - We&#39;re looking for a combination of any letter, regardless of case</p>
+<p><code>[0-9]</code> - This will match any digit</p>
+<p><code>[349]</code> - will match either 3,4 or 9. It will also match 349 because 349 includes all the digits in the expression</p>
+<p>Examples;</p>
+<p><code>declare -f | grep &#39;^[_]&#39;</code> - shows all the functions that starts with the underscore character.</p>
+<p><code>declare -f | grep &#39;^[a-z_]&#39;</code> - shows all the functions that start with any lowercase character or underscore</p>
+<p><code>grep &#39;rotate [46]$&#39; /etc/logrotate.d/*</code> - will show all the files in /etc/logrotate.d/ that has 4 or 6 in its ending</p>
+<p><code>grep &#39;rotate [^4]$&#39; /etc/logrotate.d/*</code> - will match every file that has &#39;rotate&#39; in its ending but we don&#39;t want the 4 (everything else but the 4)</p>
+<p><code>grep &#39;[Ss]erver&#39; /etc/hosts.allow</code> - What do you think this does?</p>
+<h2>boundaries</h2>
+<p><code>\s</code> represents whitespace (line return, tab or just plain whitespace)</p>
+<p><code>\b</code> a word boundary, might be a space but could also be hypen.</p>
+<p><code>\S</code> - Not a white space (revers of \s)</p>
+<p><code>\B</code> not a word boundary (reverse \b)</p>
+<p><code>\ssystem</code> will match &quot;file system&quot;</p>
+<p><code>\bsystem</code> will match &quot;file system&quot; and &quot;file-system&quot;</p>
+<p>Examples;</p>
+<p><code>grep server  /etc/ntp.conf.bak</code> will match lines that has &quot;server&quot; and &quot;servers&quot;. If you want to exclude the lines with &quot;servers&quot; (plural), put a word boundary on the regular expression, like this.</p>
+<p><code>grep &#39;server\b&#39; /etc/ntp.conf.bak</code>  - this will exclude the lines that has the plural &quot;servers&quot;</p>
+<p><code>grep &#39;server\S&#39; /etc/ntp.conf.bak</code> - this command on the other hand, will only the show the lines that the &quot;servers&quot; (plural)</p>
+<h2>quantifiers</h2>
+<p><code>a*</code> matches zero or more <em>a</em> </p>
+<p><code>a?</code> matches zero <em>a</em> or once only</p>
+<p><code>a+</code> matches one or more occurences</p>
+<p><code>a{2}</code> matches exactly 3 <em>a</em> characters</p>
+<p>Now, some examples;</p>
+<p><code>grep &#39;^\s#&#39; /vagrant/Vagrantfile</code> - will show all the commented lines (the ones with a pound sign)</p>
+<p><code>grep -v &#39;^\s#&#39; /vagrant/Vagrantfile</code> - will show only the lines that are not commented</p>
+<h1>sed</h1>
+<p><em>sed</em> is a non-interactive stream batch editor. It works with streams e.g. STDIN or when a file is read into memory, it&#39;s treated as a stream. You can do text transformations with <em>sed</em>.</p>
+<p><code>sed -n &#39;p&#39; sample2</code> - prints out each line in our sample2 file (-n means suppress the output, only show the pattern. We don&#39;t have a pattern, so it shows everything)</p>
+<p><code>sed -n &#39;1,5 p&#39; sample2</code> - prints lines 1-5 of sample2</p>
+<p><code>sed -n &#39;5,$ p&#39; sample2</code> - prints from line 5 up until the end of the doc</p>
+<p><code>sed -n &#39;/^a/ p&#39; sample2</code> - prints all the lines that starts with letter <em>a</em></p>
+<p><code>sed -n &#39;/^a[0-9]/ p&#39; sample2</code> prints all the lines that start with <em>a</em> followed by digits</p>
+<h3>substitute command</h3>
+<p>When you want to replace a specific string occurence with something. The command is as follows</p>
+<pre><code class='language-shell' lang='shell'>sed &#39;[range] s/&lt;string&gt;/&lt;replacement&gt;/&#39; file
+</code></pre>
+<p>The command <code>sed s/start/bleh/ sample2</code> will replace all the occurences of the word &quot;start&quot; with &quot;bleh&quot; in the sample2 file. But this will only print in STDOUT, it won&#39;t actually change the file sample2.</p>
+<p>For example, let&#39;s consider the <em>pythonsample.py</em> file (shown below)</p>
+<pre><code class='language-python' lang='python'>count = 0
+while True:
+print(count)
+count += 1
+if count &gt;= 5:
+break
+</code></pre>
+<p>It&#39;s a botched program, because it doesn&#39;t have any indentations (Python is a stickler for indents).  Just looking at the program, the codes after <em>while</em> should be indented; also the codes after <em>if</em> should be indented.  Let&#39;s print this out in the terminal and show their line numbers. You can do that with this command <code>nl pythonsample.py</code>, which shows the following output.</p>
+<pre><code class='language-python' lang='python'>     1	count = 0
+     2	while True:
+     3	print(count)
+     4	count += 1
+     5	if count &gt;= 5:
+     6	break
+</code></pre>
+<p>We should indent lines 3-5 by 4 spaces, and then line 6 by 8 spaces.  </p>
+<pre><code class='language-shell' lang='shell'>sed &#39;3,5 s/^/    /g&#39; pythonsample.py
+</code></pre>
+<p>This results in the following file</p>
+<pre><code class='language-python' lang='python'>count = 0
+while True:
+    print(count)
+    count += 1
+    if count &gt;= 5:
+break
+
+</code></pre>
+<p>Of course, these changes aren&#39;t written permanently to the pythonsample file. To make the changes permanent, we can redirect the output of the <em>sed</em> command to the python file, like this</p>
+<pre><code class='language-shell' lang='shell'>sed &#39;3,5 s/^/    /g&#39; pythonsample.py &gt; pythonsample.py
+</code></pre>
+<p>Or we can use the <code>-i</code> directive, like this</p>
+<pre><code class='language-shell' lang='shell'>sed -i.bak &#39;3,5 s/^/    /g&#39; pythonsample.py
+</code></pre>
+<p>We still have to fix line number 6, it needs to be indented 8 spaces; I&#39;ll leave this to you for a small exercise.</p>
+<h2>Appending</h2>
+<p>You can also use sed to append entries to files. Let&#39;s see the following example. </p>
+<pre><code class='language-shell' lang='shell'> sed -n &#39;/^server  3/ p&#39; ntp.conf
+</code></pre>
+<p>It should give us the following output</p>
+<pre><code class='language-shell' lang='shell'>server  3.us.pool.ntp.org               iburst
+</code></pre>
+<p>If we wanted to append a line after &quot;server  3&quot;, we can manage it with this command</p>
+<pre><code class='language-shell' lang='shell'>sed &#39;/^server  3/ a server  ntp.example.com&#39; ntp.conf | more
+</code></pre>
+<p>The <code>| more</code> command is there just so we can see the results before it scrolls out of the screen. Again, this isn&#39;t permanent and won&#39;t be written back to the file; so, let&#39;s make it permanent.</p>
+<pre><code class='language-shell' lang='shell'>sed -i.bak &#39;/^server  3/ a server  ntp.example.com&#39; ntp.conf
+</code></pre>
+<p>If we use the <em>i</em> command instead of <em>a</em>,  instead of &quot;ntp.example.com&quot; being written after &quot;server. 3&quot;, it will be written before it. Try it out.</p>
+<pre><code class='language-shell' lang='shell'>sed &#39;/^server  3/ i server  ntp.example.com&#39; ntp.conf | more
+</code></pre>
+<p>If we wanted to delete some entries from the file ntp.conf, say, we wanted to delete servers 0-3, we can do it like this</p>
+<pre><code class='language-shell' lang='shell'>sed &#39;/^server\s [0-9]\./ d&#39; ntp.conf | more
+</code></pre>
+<h2>Multiple sed commands</h2>
+<p>You can combine sed commands (interactively) using curly braces, like this</p>
+<pre><code class='language-sed' lang='sed'>sed &#39;{
+   3,5  s/^/    g 
+   6    s/^/    g 
+}&#39; pythonsample.py
+</code></pre>
+<p>Or we can put these commands in control file (a program).  Let&#39;s say we have a file called &quot;pythonsample.sed&quot;; it doesn&#39;t matter what the name of the file is, we don&#39;t even have to put the &quot;sed&quot; extension, the name serves a practical purpose (for us to remember it easily), there is no technical reason for the file to be named like that. We can put the following commands in it.</p>
+<pre><code class='language-sed' lang='sed'>3,5  s/^/    g
+6    s/^/    g 
+</code></pre>
+<p>To execute this, we can use the command</p>
+<pre><code class='language-shell' lang='shell'>sed -f pythonsample.sed pythonsample.py
+</code></pre>
+<p>This results into</p>
+<pre><code class='language-python' lang='python'>count = 0
+while True:
+    print(count)
+    count += 1
+    if count &gt;= 5:
+        break
+</code></pre>
+<p>Now, all you have to do is to make the change permanent in the file. Use the <code>-i</code> or <code>--in-place</code> option in the <code>sed</code> command to write the changes to the file.</p>
+<h1>awk</h1>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><a href='https://likegeeks.com/awk-command/' target='_blank' class='url'>https://likegeeks.com/awk-command/</a></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<h2> </h2>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><a href='https://medium.com/factory-mind/regex-tutorial-a-simple-cheatsheet-by-examples-649dc1c3f285' target='_blank' class='url'>https://medium.com/factory-mind/regex-tutorial-a-simple-cheatsheet-by-examples-649dc1c3f285</a></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</body>
+</html>

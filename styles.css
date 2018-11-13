@@ -1,0 +1,43 @@
+<style>
+body {
+  font-size: 1.1em;
+  margin-left:auto;
+  margin-right:auto;
+  width:80%;
+  line-height: 1.4em;
+}
+
+img {
+  max-width: 80%;
+  display:block;
+}
+
+h1, h2, h3 {
+  border-bottom: 1px solid #dedede;
+  font-weight:normal;
+}
+h1 {font-size: 3em;}
+h2 {font-size: 2em;}
+h3 {font-size: 1.5em;}
+
+
+pre {
+  background: #fdfdf7;
+  border: 2px solid #dedede;
+  padding: 8px;
+}
+
+code {
+  font-family: 'Menlo', monospace;
+  /* color: #f1f1f1; */
+  /* background: #707070;  */
+  border-radius: 10px;
+  padding-right: 3px;
+  padding-left: 3px;
+}
+pre code {
+  font-family: 'Monaco', 'Menlo', monospace;
+  background: #fdfdf7;
+  color: #000;
+}
+</style>
