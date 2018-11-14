@@ -1,0 +1,7 @@
+Doe John johndoe@gmail.com 1001
+Gosling James jamesgosling@sun.com 1002
+Stroustrup Bjarne bstroustrup@bell.com 1003
+Ritchie Dennis dmr@bell.com 1004
+Hevery Misko mhevery@nodejs.com 1005
+Rossum Guido guido@google.com 1006
+

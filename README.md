@@ -344,6 +344,70 @@ Now, all you have to do is to make the change permanent in the file. Use the `-i
 
 # awk
 
+AWK stands for Aho Weinberger and Kernighan, these were the 3 people responsible for creating the awk programming language. It was primarily designed for text processing (parsing files and generating reports).
+
+Awk programs are simple, it's made up of _rules_. A rule is made up of a _pattern_ and a set of_actions_.  Awk programs/invocations generally looks like this
+
+```bash
+awk '{print}' etc/man.conf
+```
+
+The above example shows how to invoke awk on the command line (interactively).  Later, we'll see how to put awk commands in a control file or a program file.  In the example code above, we only have one statement inside the main block of the program; `print`. This command will be applied to all the lines in our input file because we did not specify any pattern or condition.  
+
+When the program is ran, each line will be parsed and the rule will be applied to each line. In the previous code sample, our rule doesn' t have a pattern, it only has an action. When there is no pattern on the rule, the action is applied to _all_ the lines in the input file.
+
+Another basic example is as follows
+
+```bash
+awk '/produce/ {print}' groceries.txt
+```
+
+Now we have a pattern and action on the awk command. As you can see, we specify the pattern as a regular expressions (same as grep and sed). Now, our program will only print the lines which matches the pattern.
+
+By default, awk prints the entire line. If we wanted to print a specific field, we can do so by using field specifiers. For example
+
+```bash
+awk '/produce/ {print $2}' groceries.txt
+```
+
+The code above prints only the second column.
+
+_exercise:_ try printing `$0` or `$1`
+
+Let's start saving our awk programs into a control file e.g. _sample.awk_
+
+_sample.awk_
+
+```aw
+BEGIN { print "Hello sample"} # (1)
+# This is a comment
+
+/produce/ {print $0}          # (2)
+/groceries/ {print}           # (3)
+
+END {print "TOTAL RECORDS : "  NR}  # (4)
+```
+
+We can run this command with `awk -f sample.awk groceries.txt`.  
+
+**(1)** This is an optional BEGIN section.  When there is BEGIN section, it's block gets executed _only_ once.
+
+**(2)** The first rule in our program. It searches for the string pattern _produce_, if it ther is a match, the whole line is printed; `$0` means the whole line
+
+**(3)** Second rule in the program. It searches for the string pattern _groceries_, if it is found, the whole line is printed. We don't have to specify `$0` if we want to print the whole line, that's the default of the `print` command
+
+**(4)** This is an END block. Like BEGIN, if it's found, it gets executed only once. So, it's good for printing summaries. The `NR` variable stands for _number of records_.
+
+**Field Separator**
+
+
+
+
+
+
+
+
+
 
 
 
@@ -353,6 +417,12 @@ Now, all you have to do is to make the change permanent in the file. Use the `-i
 
 
 https://likegeeks.com/awk-command/
+
+https://www.gnu.org/software/gawk/manual/gawk.html#Getting-Started
+
+https://www.tutorialspoint.com/awk/awk_string_concatenation_operator.htm
+
+https://www.youtube.com/watch?v=u8RXKFTekqw
 
 
 

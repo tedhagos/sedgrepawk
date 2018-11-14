@@ -1,0 +1,7 @@
+dairy milk 3
+produce bananas 10
+produce spinach 10
+produce apples 12
+meat salmon 4
+grocery coffee 10
+
